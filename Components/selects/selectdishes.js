@@ -6,20 +6,31 @@ const SelectDishes = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedDish, setSelectedDish] = useState(null);
   const [categories, setCategories] = useState([]);
+  const [selectedPlates, setSelectedPlates] = useState([]); // Estado para almacenar los platos seleccionados
 
   useEffect(() => {
-    // Función para obtener las categorías y platos desde el API
     const fetchCategories = async () => {
       try {
-        const response = await fetch('http://192.168.1.10:8000/api/categorias');
+        const response = await fetch('http://192.168.1.8:8000/api/platos');
         const data = await response.json();
-        setCategories(data);
+        const groupedCategories = {};
+        data.forEach(plato => {
+          if (!groupedCategories[plato.categoria]) {
+            groupedCategories[plato.categoria] = [];
+          }
+          groupedCategories[plato.categoria].push(plato);
+        });
+        const formattedCategories = Object.keys(groupedCategories).map(categoria => ({
+          label: categoria,
+          value: categoria,
+          platos: groupedCategories[categoria].map(plato => ({ label: plato.nombre, value: plato._id }))
+        }));
+        setCategories(formattedCategories);
       } catch (error) {
         console.error('Error fetching categories:', error);
       }
     };
 
-    // Llamada a la función para obtener las categorías cuando el componente se monta
     fetchCategories();
   }, []);
 
@@ -29,22 +40,25 @@ const SelectDishes = () => {
   };
 
   const handleDishChange = (value) => {
-    setSelectedDish(value);
-    console.log("Plato seleccionado:", value); 
+    if (value !== selectedDish) { // Agregar validación para evitar ejecución duplicada
+      setSelectedDish(value);
+      console.log("Plato seleccionado:", value);
+      setSelectedPlates(prevPlates => [...prevPlates, value]); // Agregar el _id del plato seleccionado al array
+    }
   };
 
   return (
     <View style={{ flex:1, width:'100%', gap:8 }}>
       <RNPickerSelect
         placeholder={{ label: "Seleccionar categoría", value: null }}
-        items={categories.map(category => ({ label: category.categorias[0].nombre, value: category._id }))}
+        items={categories.map(category => ({ label: category.label, value: category.value }))}
         onValueChange={handleCategoryChange}
         value={selectedCategory}
       />
       {selectedCategory && (
         <RNPickerSelect
           placeholder={{ label: "Seleccionar plato", value: null }}
-          items={categories.find(category => category._id === selectedCategory).categorias[0].platos.map(dish => ({ label: dish.nombre, value: dish._id }))}
+          items={categories.find(category => category.value === selectedCategory).platos}
           onValueChange={handleDishChange}
           value={selectedDish}
         />
