@@ -9,4 +9,4 @@ export const COMANDA_API_SEARCH_BY_DATE ='https://backend-lasgambusinas.onrender
 // export const DISHES_API = 'http://192.168.1.8:8000/api/platos';
 // export const COMANDASEARCH_API_GET = 'http://192.168.1.8:8000/api/comanda';
 // export const SELECTABLE_API_GET = 'http://192.168.1.8:8000/api/mesas';
-// export const COMANDA_API_SEARCH_BY_DATE ='http://192.168.1.8:8000/api/comanda/fecha'
+// export const COMANDA_API_SEARCH_BY_DATE ='http://192.168.1.8:8000/api/comanda/fecha' 
