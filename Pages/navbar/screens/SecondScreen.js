@@ -86,25 +86,36 @@ const SecondScreen = () => {
 
   const handleEnviarComanda = async () => {
     try {
-      setIsSendingComanda(true);
+      if (!selectedTableInfo) {
+        Alert.alert("Porfavor ingresar Mesa");
+        return;
+      }
 
       const selectedPlatos_ = await AsyncStorage.getItem("selectedPlates");
       const platos = JSON.parse(selectedPlatos_);
-      const platosData = platos.map((plato, index) => ({
+
+      if (!platos || platos.length === 0) {
+        Alert.alert("Porfavor seleccionar al menos un plato");
+        return;
+      }
+
+      setIsSendingComanda(true);
+
+      const platosData = platos.map((plato) => ({
         plato: plato._id,
       }));
       const response = await axios.post(COMANDA_API, {
         mozos: userInfo.id,
         mesas: selectedTableInfo.id,
         platos: platosData,
-        cantidades: cantidadesComanda, 
+        cantidades: cantidadesComanda,
         observaciones: additionalDetails,
       });
       await handleLimpiarComanda();
       Alert.alert("Comanda enviada exitosamente");
     } catch (error) {
       console.error("Error al enviar la comanda:", error);
-      Alert.alert("Error", "No se pudo enviar la comanda");
+      Alert.alert("Error", "Porfavor seleccionar una mesa");
     } finally {
       setTimeout(() => {
         setIsSendingComanda(false);
@@ -170,7 +181,7 @@ const SecondScreen = () => {
           <View style={{ marginTop: 40 }}>
             <Comandastyle onCantidadesChange={handleCantidadesChange} cleanComanda={cleanComanda} setCleanComanda={setCleanComanda} />
           </View>
-          <View style={{ gap:20, marginTop: 32, maxWidth: "60%", justifyContent:"center", alignSelf: "center"  }}>
+          <View style={{ gap: 20, marginTop: 32, maxWidth: "60%", justifyContent: "center", alignSelf: "center" }}>
             <Button title="Enviar comanda" onPress={handleEnviarComanda} disabled={isSendingComanda} />
             <Button title="Limpiar Comanda" onPress={handleLimpiarComanda} />
           </View>

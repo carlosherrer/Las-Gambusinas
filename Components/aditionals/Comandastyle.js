@@ -131,6 +131,7 @@ const ComandaStyle = ({ cleanComanda, setCleanComanda }) => {
             onChangeText={(text) => handleCantidadChange(text, input.id)}
             keyboardType="numeric"
             style={{ flex: 1, maxWidth: "20%" }}
+            maxLength={2}
           />
           <SelectDishes onValueChange={handleDishChange} style={{ flex: 1 }} />
           <Button title="X" onPress={() => handleRemoveInput(input.id)} style={{ flex: 1 }} />
